@@ -1,0 +1,13 @@
+{
+  "name": "iphone-quote-generator",
+  "version": "1.0.0",
+  "description": "iPhone Quote Generator - Vercel Serverless",
+  "main": "api/generate.js",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.x"
+  }
+}

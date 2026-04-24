@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>𝐓𝐎𝐒𝐇𝐈𝐑𝐎 𝐇𝐈𝐓𝐒𝐔𝐆𝐀𝐘𝐀 Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#000000; --card:#1a1a1a;
+      --text:#ffffff; --muted:#fff;
+      --primary:#ff0000; --secondary:#AD4AE7;
+      --accent:#666666;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+    body{
+      background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.1),transparent 30%),
+                 radial-gradient(circle at 80% 10%,rgba(255,255,255,.08),transparent 25%),
+                 radial-gradient(circle at 50% 90%,rgba(255,255,255,.05),transparent 30%),
+                 var(--bg);
+      color:var(--text);min-height:100vh;overflow-x:hidden;
+    }
+    
+    /* Server Status Banner - Full Width dengan Video */
+    .server-banner {
+      border-radius: 15px;
+      margin: 20px auto 30px;
+      position: relative;
+      overflow: hidden;
+      min-height: 250px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .banner-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .server-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+      z-index: 1;
+    }
+
+    .banner-content {
+      position: absolute;
+      bottom: 15px;
+      left: 25px;
+      z-index: 2;
+      text-align: left;
+    }
+
+    .banner-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .banner-subtitle {
+      font-size: 13px;
+      color: var(--text);
+      opacity: 0.9;
+      margin-bottom: 3px;
+    }
+
+    .banner-time {
+      color: #ffff;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-indicator {
+      position: absolute;
+      bottom: 15px;
+      right: 25px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #00ff00;
+      font-size: 13px;
+      font-weight: 600;
+      background: rgba(0,0,0,0.4);
+      padding: 8px 16px;
+      border-radius: 25px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0,255,0,0.3);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00ff00;
+      box-shadow: 0 0 10px #00ff00;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,255,0,0.7); }
+      70% { opacity: 0.7; box-shadow: 0 0 0 10px rgba(0,255,0,0); }
+      100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,255,0,0); }
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--text);
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1001;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+    }
+    
+    .menu-toggle:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .menu-toggle i {
+      font-size: 20px;
+    }
+
+    .sidebar {
+      width: 270px;
+      background: rgba(26,26,26,0.95);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(255,255,255,0.15);
+      padding: 25px 20px;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 1000;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar.active {
+      transform: translateX(0);
+    }
+    
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 999;
+      display: none;
+      backdrop-filter: blur(3px);
+    }
+    
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    .sidebar-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(#ffffff 0%, #ff0000 30%, #AD4AE7 60%, #ffffff 100%);
+      animation: rotate 3s linear infinite;
+      padding: 4px;
+    }
+
+    .logo {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      z-index: 1;
+      position: relative;
+      background: #1a1a1a;
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .app-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+      text-shadow: 0 0 12px rgba(255,255,255,0.5);
+      margin-bottom: 8px;
+    }
+    
+    .access-info {
+      font-size: 12px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255,255,255,0.1);
+      padding: 8px 14px;
+      border-radius: 10px;
+      margin-top: 5px;
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .access-info::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #ffffff 0%, #ff0000 30%, #AD4AE7 60%, #ffffff 100%);
+      border-radius: 12px;
+      z-index: -1;
+      animation: borderGlow 3s linear infinite;
+      background-size: 400% 400%;
+    }
+    
+    @keyframes borderGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .nav-menu {
+      list-style: none;
+      margin-top: 25px;
+    }
+    
+    .nav-item {
+      margin-bottom: 8px;
+    }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 12px;
+      font-size: 14px;
+      transition: .3s;
+      font-weight: 500;
+    }
+    
+    .nav-link:hover,
+    .nav-link.active {
+      background: linear-gradient(90deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
+      border-left: 4px solid var(--secondary);
+      transform: translateX(5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 20px 35px 35px;
+      transition: margin-left 0.3s ease;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    
+    .header-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255,255,255,0.3);
+    }
+    
+    .form-section, .info-section {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 18px 18px 0 0;
+    }
+
+    .info-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      border-radius: 18px 18px 0 0;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-shadow: 0 0 15px rgba(255,255,255,0.3);
+    }
+
+    .section-title i {
+      color: var(--primary);
+      font-size: 24px;
+    }
+
+    .label {
+      color: rgb(208,208,208);
+      font-size: 16px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .label i {
+      margin-right: 8px;
+    }
+
+    .input-box {
+      width: 100%;
+      padding: 12px 15px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      outline: none;
+      transition: all 0.3s;
+      font-size: 15px;
+    }
+
+    .input-box:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 15px var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .input-hint {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 5px;
+      margin-bottom: 15px;
+    }
+
+    .action-btn-form {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(123, 92, 245, 0.4);
+      letter-spacing: 0.5px;
+    }
+
+    .action-btn-form:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(123, 92, 245, 0.6);
+    }
+
+    .action-btn-form:active {
+      transform: translateY(1px);
+    }
+
+    .preview-area {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      display: none;
+    }
+
+    .preview-area::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      border-radius: 18px 18px 0 0;
+    }
+
+    .preview-area img {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 25px rgba(255, 0, 100, 0.2);
+    }
+
+    .download-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding: 10px 25px;
+      border-radius: 10px;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .download-btn:hover {
+      box-shadow: 0 0 20px rgba(123, 92, 245, 0.4);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 15px;
+      color: var(--secondary);
+      font-weight: 600;
+      text-shadow: 0 0 10px var(--secondary);
+    }
+
+    .error {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      color: #df0f0f;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 15px;
+      display: none;
+      text-align: center;
+    }
+
+    .info-content {
+      line-height: 1.6;
+    }
+
+    .info-content h3 {
+      color: #df0f0f;
+      margin-bottom: 15px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .info-content p {
+      margin-bottom: 15px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .info-content ul {
+      margin-left: 20px;
+      margin-bottom: 15px;
+    }
+
+    .info-content li {
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .info-content .highlight {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .note-box {
+      background: rgba(173, 74, 231, 0.1);
+      border-left: 4px solid #FFF900;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .note-box p {
+      margin: 0;
+      color: #F9F444;
+      font-size: 14px;
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-section, .info-section {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @media (min-width: 1024px) {
+      .sidebar { transform: translateX(0); }
+      .main-content { margin-left: 270px; }
+      .menu-toggle { display: none; }
+    }
+    
+    @media (max-width: 1023px) {
+      .main-content { margin-left: 0; padding: 15px 20px 80px; }
+      .header-title { font-size: 24px; }
+      .server-banner { min-height: 200px; }
+      .banner-content { left: 15px; bottom: 10px; }
+      .status-indicator { right: 15px; bottom: 10px; }
+    }
+
+    @media (max-width: 480px) {
+      .form-section, .info-section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="menu-toggle" id="menuToggle">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <div class="logo-ring"></div>
+        <img class="logo" src="https://i.pinimg.com/564x/01/7c/31/017c31c610acf77d1484e564b59ce63c.jpg" alt="Logo">
+      </div>
+      <div class="app-title">IQC PANEL</div>
+      <div class="access-info">⚡ EXECUTION MODE: ACTIVE ⚡</div>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-item"><a href="#" class="nav-link active" id="nav-home"><i class="fas fa-home"></i> Beranda</a></li>
+      <li class="nav-item"><a href="#" class="nav-link" id="nav-generator"><i class="fas fa-qrcode"></i> Generator</a></li>
+      <li class="nav-item"><a href="#" class="nav-link" id="nav-guide"><i class="fas fa-book"></i> Panduan</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content">
+    <div class="server-banner">
+      <video class="banner-video" autoplay muted loop playsinline>
+        <source src="https://files.catbox.moe/u7rmx0.mp4" type="video/mp4">
+      </video>
+      <div class="banner-content">
+        <div class="banner-title">𝐓𝐎𝐒𝐇𝐈𝐑𝐎 𝐇𝐈𝐓𝐒𝐔𝐆𝐀𝐘𝐀</div>
+        <div class="banner-time">
+          <i class="fas fa-clock"></i>
+          <span id="currentTime">Loading...</span>
+        </div>
+      </div>
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span>Online</span>
+      </div>
+    </div>
+
+    <div class="header">
+      <h1 class="header-title">iPhone Quote Generator</h1>
+    </div>
+
+    <div class="form-section">
+      <h2 class="section-title">
+        <i class="fas fa-quote-right"></i>
+        Quote Generator Panel
+      </h2>
+      
+      <div class="label">
+        <i class="fas fa-clock"></i> Jam
+      </div>
+      <input type="text" class="input-box" id="time" placeholder="18:00" required>
+      <div class="input-hint">Format: HH:MM</div>
+
+      <div class="label">
+        <i class="fas fa-battery-half"></i> Persentase Baterai
+      </div>
+      <input type="number" class="input-box" id="battery" placeholder="40" min="0" max="100" required>
+      <div class="input-hint">Angka 0-100</div>
+
+      <div class="label">
+        <i class="fas fa-signal"></i> Nama Provider
+      </div>
+      <input type="text" class="input-box" id="carrier" placeholder="Telkomsel" required>
+
+      <div class="label">
+        <i class="fas fa-comment"></i> Pesan
+      </div>
+      <textarea class="input-box" id="message" placeholder="Haii bang" required style="min-height: 100px; resize: vertical;"></textarea>
+
+      <button class="action-btn-form" id="generateBtn">
+        <i class="fas fa-rocket"></i> GENERATE QUOTE
+      </button>
+      
+      <div class="loading" id="loading">🔄 Sedang membuat gambar...</div>
+      <div class="error" id="error"></div>
+    </div>
+
+    <div class="preview-area" id="previewArea">
+      <img id="previewImage" alt="Preview">
+      <br>
+      <a href="#" class="download-btn" id="downloadBtn" download="iphone-quote.png">Download</a>
+    </div>
+
+    <div class="info-section">
+      <h2 class="section-title">
+        <i class="fas fa-info-circle"></i>
+        Panduan Penggunaan
+      </h2>
+      <div class="info-content">
+        <h3>𝘾𝙖𝙧𝙖 𝙈𝙚𝙣𝙜𝙜𝙪𝙣𝙖𝙠𝙖𝙣 𝙞𝙋𝙝𝙤𝙣𝙚 𝙌𝙪𝙤𝙩𝙚 𝙂𝙚𝙣𝙚𝙧𝙖𝙩𝙤𝙧</h3>
+        <p>Panel ini memungkinkan Anda untuk membuat screenshot chat iPhone palsu dengan mudah. Berikut adalah panduan lengkapnya:</p>
+        
+        <ul>
+          <li><span class="highlight">Jam</span>: Masukkan waktu yang ingin ditampilkan pada screenshot (format: HH:MM)</li>
+          <li><span class="highlight">Persentase Baterai</span>: Tentukan persentase baterai iPhone (0-100)</li>
+          <li><span class="highlight">Nama Provider</span>: Masukkan nama operator seluler yang ingin ditampilkan</li>
+          <li><span class="highlight">Pesan</span>: Tulis pesan yang ingin ditampilkan dalam screenshot</li>
+        </ul>
+        
+        <div class="note-box">
+          <p><i class="fas fa-lightbulb"></i> <strong>Tips:</strong> Untuk hasil terbaik, gunakan nama provider yang sesuai dengan wilayah Anda dan pesan yang natural.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('active');
+      sidebarOverlay.classList.toggle('active');
+    }
+    
+    if (menuToggle) {
+      menuToggle.addEventListener('click', toggleSidebar);
+    }
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', toggleSidebar);
+    }
+    
+    // Update current time
+    function updateCurrentTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      const currentTimeElement = document.getElementById('currentTime');
+      if (currentTimeElement) {
+        currentTimeElement.textContent = timeString;
+      }
+    }
+    
+    // Set default time value
+    window.addEventListener('load', () => {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const timeInput = document.getElementById('time');
+      if (timeInput) {
+        timeInput.value = `${h}:${m}`;
+      }
+      updateCurrentTime();
+    });
+
+    // Gunakan API endpoint Vercel (tanpa CORS)
+    const API_BASE = '/api/generate';
+
+    const generateBtn = document.getElementById('generateBtn');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const previewArea = document.getElementById('previewArea');
+    const previewImage = document.getElementById('previewImage');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    let currentImageBlob = null;
+
+    if (generateBtn) {
+      generateBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const time = document.getElementById('time').value.trim();
+
+        if (!time || !battery || !carrier || !message) {
+          showError('⚠️ Semua field harus diisi!');
+          return;
+        }
+
+        const batteryNum = parseInt(battery);
+        if (isNaN(batteryNum) || batteryNum < 0 || batteryNum > 100) {
+          showError('⚠️ Baterai harus angka antara 0-100!');
+          return;
+        }
+
+        const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/;
+        if (!timeRegex.test(time)) {
+          showError('⚠️ Format waktu harus HH:MM (contoh: 14:30)');
+          return;
+        }
+
+        if (error) error.style.display = 'none';
+        if (previewArea) previewArea.style.display = 'none';
+        if (loading) loading.style.display = 'block';
+        if (generateBtn) {
+          generateBtn.disabled = true;
+          generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+        }
+
+        try {
+          const params = new URLSearchParams({
+            time: time,
+            batteryPercentage: batteryNum,
+            carrierName: carrier,
+            messageText: message,
+            emojiStyle: 'apple'
+          });
+
+          const url = `${API_BASE}?${params.toString()}`;
+
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `HTTP ${response.status}`);
+          }
+
+          currentImageBlob = await response.blob();
+          const imageUrl = URL.createObjectURL(currentImageBlob);
+
+          previewImage.onload = () => {
+            URL.revokeObjectURL(imageUrl);
+            previewArea.style.display = 'block';
+            loading.style.display = 'none';
+            if (generateBtn) {
+              generateBtn.disabled = false;
+              generateBtn.innerHTML = '<i class="fas fa-rocket"></i> GENERATE QUOTE';
+            }
+          };
+
+          previewImage.onerror = () => {
+            showError('❌ Gagal memuat gambar. Silakan coba lagi.');
+            loading.style.display = 'none';
+            if (generateBtn) {
+              generateBtn.disabled = false;
+              generateBtn.innerHTML = '<i class="fas fa-rocket"></i> GENERATE QUOTE';
+            }
+          };
+
+          previewImage.src = imageUrl;
+
+          downloadBtn.onclick = (e) => {
+            e.preventDefault();
+            if (currentImageBlob) {
+              const downloadUrl = URL.createObjectURL(currentImageBlob);
+              const a = document.createElement('a');
+              a.href = downloadUrl;
+              a.download = `iphone-quote-${Date.now()}.png`;
+              a.click();
+              URL.revokeObjectURL(downloadUrl);
+            } else {
+              window.open(url, '_blank');
+            }
+          };
+
+        } catch (err) {
+          showError('Error: ' + err.message);
+          loading.style.display = 'none';
+          if (generateBtn) {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = '<i class="fas fa-rocket"></i> GENERATE QUOTE';
+          }
+        }
+      });
+    }
+
+    function showError(message) {
+      if (error) {
+        error.textContent = message;
+        error.style.display = 'block';
+      }
+    }
+
+    setInterval(updateCurrentTime, 1000);
+    
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function() {
+        if (window.innerWidth < 1024) {
+          toggleSidebar();
+        }
+      });
+    });
+
+    const navHome = document.getElementById('nav-home');
+    const navGenerator = document.getElementById('nav-generator');
+    const navGuide = document.getElementById('nav-guide');
+    const formSection = document.querySelector('.form-section');
+    const infoSection = document.querySelector('.info-section');
+
+    if (navHome) {
+      navHome.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        navHome.classList.add('active');
+      });
+    }
+
+    if (navGenerator) {
+      navGenerator.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        navGenerator.classList.add('active');
+      });
+    }
+
+    if (navGuide) {
+      navGuide.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (infoSection) infoSection.scrollIntoView({ behavior: 'smooth' });
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        navGuide.classList.add('active');
+      });
+    }
+  </script>
+</body>
+</html>
